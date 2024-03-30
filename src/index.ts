@@ -1,6 +1,6 @@
 import { logger } from './logger'
 import { router } from './router-instance'
-import { wsHandler } from './ws-handler-instance'
+import { wsHandler } from './ws-handler'
 
 const server = Bun.serve({
   fetch(req, server) {
