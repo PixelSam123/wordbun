@@ -2,9 +2,15 @@
 
 Fast & light implementation for wordgames, a word games server for WebSockets
 
+## Highlights over the Java version
+
+- Abandoned random word API usage
+- Added room-listing endpoint
+- Added accidental disconnection handling (gives you time to reconnect)
+
 ## APIs used
 
-Random word API at https://random-word-api.herokuapp.com
+No APIs used. Word banks come from text files.
 
 ## List of games
 
