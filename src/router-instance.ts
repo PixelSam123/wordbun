@@ -24,6 +24,7 @@ router.add('/anagram', () => {
 
   return Response.json(placeholderPublicRooms)
 })
+
 router.add('/ws/anagram', ({ req, server }) => {
   if (server.upgrade(req)) {
     return
