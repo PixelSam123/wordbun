@@ -11,32 +11,16 @@ export class Router {
     [pathname: string]: RouteHandler | undefined
   } = {}
 
-  add(route: string, handler: RouteHandler): void {
-    this.pathnameToHandler[route] = handler
+  add(pathname: string, handler: RouteHandler): void {
+    this.pathnameToHandler[pathname] = handler
   }
 
   handle(req: Request, server: Server): Response | undefined {
     const pathname = new URL(req.url).pathname
 
-    let handler: RouteHandler | undefined
-    let partialPathname = pathname
+    const { handler, partialPathname } = this.routePartialMatch(pathname)
 
-    for (
-      let lastSlashIndex = partialPathname.lastIndexOf('/');
-      lastSlashIndex !== -1;
-      lastSlashIndex = partialPathname.lastIndexOf('/')
-    ) {
-      const handlerToAssign = this.pathnameToHandler[partialPathname]
-
-      if (typeof handlerToAssign !== 'undefined') {
-        handler = handlerToAssign
-        break
-      }
-
-      partialPathname = partialPathname.slice(0, lastSlashIndex)
-    }
-
-    if (typeof handler === 'undefined') {
+    if (handler === null) {
       return new Response('404 Not Found', { status: 404 })
     }
 
@@ -45,5 +29,29 @@ export class Router {
       server,
       trailingPath: pathname.slice(partialPathname.length),
     })
+  }
+
+  /** Searches for a partial routing match right-to-left from the pathname */
+  private routePartialMatch(pathname: string): {
+    handler: RouteHandler | null
+    partialPathname: string
+  } {
+    let partialPathname = pathname
+
+    for (
+      let lastSlashIndex = partialPathname.lastIndexOf('/');
+      lastSlashIndex !== -1;
+      lastSlashIndex = partialPathname.lastIndexOf('/')
+    ) {
+      const handler = this.pathnameToHandler[partialPathname]
+
+      if (typeof handler !== 'undefined') {
+        return { handler, partialPathname }
+      }
+
+      partialPathname = partialPathname.slice(0, lastSlashIndex)
+    }
+
+    return { handler: null, partialPathname: '' }
   }
 }
