@@ -4,6 +4,7 @@ import hoyo from './wordbanks/hoyo.txt'
 import hsr from './wordbanks/hsr.txt'
 import id from './wordbanks/id.txt'
 import jsTopic from './wordbanks/js-topic.txt'
+import type { GameConfig, GameState } from './game-states'
 
 type PlayerData = {
   points: number
@@ -18,14 +19,6 @@ export type RoomHandlers = {
   onLastPlayerRemoved: RoomCallback
   onPlayerAdded: RoomPlayerCallback
   onPlayerRemoved: RoomPlayerCallback
-}
-
-type GameConfig = {
-  dictionary: string
-  roundCount: number
-  secondsPerRound: number
-  secondsPerRoundEnd: number
-  wordLength: number
 }
 
 const dictionaries: {
@@ -53,6 +46,13 @@ const dictionaries: {
   },
 }
 
+/** The maximum is exclusive and the minimum is inclusive */
+function randomInt(min: number, max: number) {
+  const minCeiled = Math.ceil(min)
+  const maxFloored = Math.floor(max)
+  return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled)
+}
+
 export class Room {
   private static readonly LEAVE_TIMEOUT = 10_000
 
@@ -60,6 +60,8 @@ export class Room {
 
   public readonly id: string
   private readonly handlers: RoomHandlers
+
+  private gameState: GameState | null = null
 
   get playerCount(): number {
     return this.usernameToPlayerData.size
@@ -190,7 +192,30 @@ export class Room {
           return 'If not disabled (-1), word length must be at least 2'
         }
 
-        return JSON.stringify(parsed) + '\n' + JSON.stringify(gameConfig)
+        const wordsOfRequestedLength = dictionaries[
+          gameConfig.dictionary
+        ]!.words.split('\n').filter(
+          (word) =>
+            gameConfig.wordLength === -1 ||
+            word.length === gameConfig.wordLength,
+        )
+
+        if (wordsOfRequestedLength.length < gameConfig.roundCount) {
+          return `Not enough words for round count of ${gameConfig.roundCount} and word length of ${gameConfig.wordLength}`
+        }
+
+        const wordPool: string[] = []
+
+        while (wordPool.length < gameConfig.roundCount) {
+          const randomIdx = randomInt(0, wordsOfRequestedLength.length)
+          const randomWord = wordsOfRequestedLength[randomIdx]
+
+          if (!wordPool.includes(randomWord)) {
+            wordPool.push(randomWord)
+          }
+        }
+
+        return 'Requested a new game.'
       } catch (err) {
         return String(err)
       }
