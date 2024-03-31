@@ -17,35 +17,36 @@ Show this message
 /list
 List the players in a room
 
-/start
-Start a new game with default settings.
-
-/start {dictionary}
-Start a game with default settings, but choose a dictionary.
-Available options are: en, id, hoyo, gi, hsr, js-topic
-
-/start {dictionary} {roundCount} {timePerRound}
-Start a new game with custom settings. Time per round is in seconds.
-
-/start {dictionary} {roundCount} {timePerRound} {wordLength}
-Start a new game with custom settings. Time per round is in seconds.
-Additionally specify the word length. Ideal for big dictionaries.
+/start [options]
+Start a new game. List of options:
+  -d, --dictionary
+  Choose a dictionary. Default is id
+  Available options are: id, hoyo, gi, hsr, js-topic
+  -r, --round-count
+  Number of rounds. Default is 10
+  -t, --time-per-round
+  Time per round in seconds. Default is 20
+  -e, --time-per-round-end
+  Time per round end in seconds. Default is 5
+  -l, --word-length
+  Word length. Default depends on dictionary
+  Set to -1 to disable
 
 /skip
 Skip your turn in a round.`
 
 function handleBaseCommands(message: string): string | null {
-  if (message.startsWith('/clear')) {
+  if (message === '/clear') {
     return chatMessage(
       'Clearing is not handled by the server. Please handle it in your client.',
     )
   }
 
-  if (message.startsWith('/help')) {
+  if (message === '/help') {
     return chatMessage(helpMessage)
   }
 
-  if (message.startsWith('/ping')) {
+  if (message === '/ping') {
     return pongMessage()
   }
 
