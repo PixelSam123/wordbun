@@ -1,6 +1,7 @@
 import { server } from '.'
+import { GameFinishedRound } from './game-states'
 import { logger } from './logger'
-import { chatMessage } from './message-factories'
+import { chatMessage, finishedGame } from './message-factories'
 import type { RoomHandlers } from './room'
 
 export const roomHandler: RoomHandlers = {
@@ -31,5 +32,30 @@ export const roomHandler: RoomHandlers = {
     message += `Word Length: ${gameConfig.wordLength === -1 ? 'Disabled' : gameConfig.wordLength}`
 
     server.publish(room.id, chatMessage(message))
+  },
+
+  onChangeGameState(room, gameState, stateChangeMessage) {
+    if (gameState === null) {
+      server.publish(room.id, finishedGame())
+      server.publish(
+        room.id,
+        chatMessage(`Game finished! Final points:\n${room.playerListTable()}`),
+      )
+    } else {
+      server.publish(room.id, gameState.getRoundInfo())
+      if (gameState instanceof GameFinishedRound) {
+        server.publish(
+          room.id,
+          chatMessage(`Round finished! Points:\n${room.playerListTable()}`),
+        )
+      }
+      if (stateChangeMessage) {
+        server.publish(room.id, chatMessage(stateChangeMessage))
+      }
+    }
+  },
+
+  onSuccessfulAnswer(room, username) {
+    server.publish(room.id, chatMessage(`${username} answered!`))
   },
 }

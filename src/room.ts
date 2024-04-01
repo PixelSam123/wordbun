@@ -4,7 +4,11 @@ import hoyo from './wordbanks/hoyo.txt'
 import hsr from './wordbanks/hsr.txt'
 import id from './wordbanks/id.txt'
 import jsTopic from './wordbanks/js-topic.txt'
-import type { GameConfig, GameState } from './game-states'
+import {
+  GameOngoingRound,
+  type GameConfig,
+  type GameState,
+} from './game-states'
 
 type PlayerData = {
   points: number
@@ -14,6 +18,11 @@ type PlayerData = {
 type RoomCallback = (room: Room) => void
 type RoomPlayerCallback = (room: Room, username: string) => void
 type RoomGameConfigCallback = (room: Room, gameConfig: GameConfig) => void
+type RoomGameStateCallback = (
+  room: Room,
+  gameState: GameState | null,
+  stateEndMessage: string | null,
+) => void
 
 export type RoomHandlers = {
   onFirstPlayerAdded: RoomCallback
@@ -21,6 +30,8 @@ export type RoomHandlers = {
   onPlayerAdded: RoomPlayerCallback
   onPlayerRemoved: RoomPlayerCallback
   onGameStart: RoomGameConfigCallback
+  onChangeGameState: RoomGameStateCallback
+  onSuccessfulAnswer: RoomPlayerCallback
 }
 
 const dictionaries: {
@@ -63,7 +74,7 @@ export class Room {
   public readonly id: string
   private readonly handlers: RoomHandlers
 
-  private gameState: GameState | null = null
+  public gameState: GameState | null = null
 
   get playerCount(): number {
     return this.usernameToPlayerData.size
@@ -218,6 +229,30 @@ export class Room {
         }
 
         this.handlers.onGameStart(this, gameConfig)
+        this.gameState = new GameOngoingRound(
+          wordPool,
+          gameConfig,
+          (username, points) => {
+            const currUser = this.usernameToPlayerData.get(username)
+
+            if (currUser) {
+              currUser.points += points
+
+              this.handlers.onSuccessfulAnswer(this, username)
+            }
+          },
+          (nextState, stateEndMessage) => {
+            this.handlers.onChangeGameState(this, nextState, stateEndMessage)
+            this.gameState = nextState
+
+            if (nextState === null) {
+              this.usernameToPlayerData.forEach((player) => {
+                player.points = 0
+              })
+            }
+          },
+        )
+        this.handlers.onChangeGameState(this, this.gameState, null)
 
         return 'New game request succeeded.'
       } catch (err) {
@@ -228,7 +263,7 @@ export class Room {
     return null
   }
 
-  private playerListTable(): string {
+  playerListTable(): string {
     return Array.from(this.usernameToPlayerData.entries())
       .sort(([_, a], [__, b]) => b.points - a.points)
       .map(

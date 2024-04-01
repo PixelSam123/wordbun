@@ -105,6 +105,10 @@ export const wsHandler: WebSocketHandler<WSData> = {
       if (isSuccess) {
         ws.data.username = message
         ws.subscribe(room.id)
+
+        if (room.gameState) {
+          ws.sendText(room.gameState.getRoundInfo())
+        }
       }
 
       return
@@ -112,6 +116,18 @@ export const wsHandler: WebSocketHandler<WSData> = {
 
     {
       const response = room.handleCommand(message)
+      if (response) {
+        ws.sendText(chatMessage(response))
+        return
+      }
+    }
+
+    {
+      const response = room.gameState?.handleMessage(
+        message,
+        ws.data.username,
+        room.playerCount,
+      )
       if (response) {
         ws.sendText(chatMessage(response))
         return
