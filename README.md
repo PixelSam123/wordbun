@@ -7,6 +7,7 @@ Fast & light implementation for wordgames, a word games server for WebSockets
 - Abandoned random word API usage
 - Added room-listing endpoint
 - Added accidental disconnection handling (gives you time to reconnect)
+- Much more convenient format to start a game
 
 ## APIs used
 
