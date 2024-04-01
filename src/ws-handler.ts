@@ -62,7 +62,7 @@ function handleUsernameEntry(
 
     return {
       isSuccess: true,
-      response: 'Welcome! Type /help for help, or for how to start the game.',
+      response: `Welcome, ${username}! Type /help for help, or for how to start the game.`,
     }
   } catch (err) {
     return {
