@@ -21,4 +21,15 @@ export const roomHandler: RoomHandlers = {
   onPlayerRemoved(room, username) {
     server.publish(room.id, chatMessage(`${username} left!`))
   },
+
+  onGameStart(room, gameConfig) {
+    let message = 'Starting new game! Settings:\n'
+    message += `Dictionary: ${gameConfig.dictionary}\n`
+    message += `Round Count: ${gameConfig.roundCount}\n`
+    message += `Seconds per Round: ${gameConfig.secondsPerRound}\n`
+    message += `Seconds per Round End: ${gameConfig.secondsPerRoundEnd}\n`
+    message += `Word Length: ${gameConfig.wordLength === -1 ? 'Disabled' : gameConfig.wordLength}`
+
+    server.publish(room.id, chatMessage(message))
+  },
 }

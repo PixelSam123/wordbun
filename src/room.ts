@@ -13,12 +13,14 @@ type PlayerData = {
 
 type RoomCallback = (room: Room) => void
 type RoomPlayerCallback = (room: Room, username: string) => void
+type RoomGameConfigCallback = (room: Room, gameConfig: GameConfig) => void
 
 export type RoomHandlers = {
   onFirstPlayerAdded: RoomCallback
   onLastPlayerRemoved: RoomCallback
   onPlayerAdded: RoomPlayerCallback
   onPlayerRemoved: RoomPlayerCallback
+  onGameStart: RoomGameConfigCallback
 }
 
 const dictionaries: {
@@ -215,7 +217,9 @@ export class Room {
           }
         }
 
-        return 'Requested a new game.'
+        this.handlers.onGameStart(this, gameConfig)
+
+        return 'New game request succeeded.'
       } catch (err) {
         return String(err)
       }
