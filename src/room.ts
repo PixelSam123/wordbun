@@ -133,6 +133,10 @@ export class Room {
     }
 
     if (message.startsWith('/start')) {
+      if (this.gameState !== null) {
+        return 'Game already in progress.'
+      }
+
       try {
         const parsed = parseArgs({
           args: message.split(/ +/).slice(1),
