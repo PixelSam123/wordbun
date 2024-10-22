@@ -45,7 +45,11 @@ export class GameOngoingRound implements GameState {
       this.endState()
     }, permanentConfig.secondsPerRound * 1_000)
 
-    this.wordToGuess = randoSequence(remainingWords[0])
+    let wordToGuess = remainingWords[0]
+    while (wordToGuess === remainingWords[0]) {
+      wordToGuess = randoSequence(remainingWords[0])
+    }
+    this.wordToGuess = wordToGuess
 
     const roundFinishTime = new Date()
     roundFinishTime.setSeconds(
