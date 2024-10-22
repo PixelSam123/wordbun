@@ -32,6 +32,7 @@ export type RoomHandlers = {
   onGameStart: RoomGameConfigCallback
   onChangeGameState: RoomGameStateCallback
   onSuccessfulAnswer: RoomPlayerCallback
+  onAnswerSkip: RoomPlayerCallback
 }
 
 const dictionaries: {
@@ -236,9 +237,13 @@ export class Room {
             const currUser = this.usernameToPlayerData.get(username)
 
             if (currUser) {
-              currUser.points += points
+              if (points === -1) {
+                this.handlers.onAnswerSkip(this, username)
+              } else {
+                currUser.points += points
 
-              this.handlers.onSuccessfulAnswer(this, username)
+                this.handlers.onSuccessfulAnswer(this, username)
+              }
             }
           },
           (nextState, stateEndMessage) => {

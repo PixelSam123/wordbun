@@ -58,4 +58,8 @@ export const roomHandler: RoomHandlers = {
   onSuccessfulAnswer(room, username) {
     server.publish(room.id, chatMessage(`${username} answered!`))
   },
+
+  onAnswerSkip(room, username) {
+    server.publish(room.id, chatMessage(`${username} skipped!`))
+  },
 }

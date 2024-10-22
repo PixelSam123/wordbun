@@ -70,21 +70,23 @@ export class GameOngoingRound implements GameState {
     username: string,
     userCount: number,
   ): string | null {
-    if (message === this.remainingWords[0]) {
+    if (message === '/skip' || message === this.remainingWords[0]) {
+      const isSkip = message === '/skip'
+
       if (this.usernamesAnswered.includes(username)) {
-        return 'You already answered...'
+        return 'You already answered/skipped...'
       }
 
       this.usernamesAnswered.push(username)
       this.onPlayerReceivePoints(
         username,
-        this.usernamesAnswered.length === 1 ? 3 : 2,
+        isSkip ? -1 : this.usernamesAnswered.length === 1 ? 3 : 2,
       )
       if (userCount === this.usernamesAnswered.length) {
         this.endState()
       }
 
-      return `You are #${this.usernamesAnswered.length}/${userCount} to answer this round.`
+      return `You are #${this.usernamesAnswered.length}/${userCount} to ${isSkip ? 'skip' : 'answer'} this round.`
     }
 
     return null
