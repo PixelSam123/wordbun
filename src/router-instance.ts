@@ -1,7 +1,9 @@
 import { publicRoom } from './response-factories'
 import { Router } from './router'
 
-const router = new Router()
+const router = new Router({
+  corsOrigins: ['http://localhost:4321', 'https://pixelsam123.github.io'],
+})
 
 router.add('/anagram', () => {
   return Response.json(

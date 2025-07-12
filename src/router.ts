@@ -3,13 +3,20 @@ import type { Server } from 'bun'
 type RouteHandler = (args: {
   req: Request
   server: Server
+  /** Probably includes the slash */
   trailingPath: string
 }) => Response | undefined
+
+type RouterConfig = {
+  corsOrigins: string[]
+}
 
 export class Router {
   private readonly pathnameToHandler: {
     [pathname: string]: RouteHandler | undefined
   } = {}
+
+  constructor(private readonly config: RouterConfig) {}
 
   add(pathname: string, handler: RouteHandler): void {
     this.pathnameToHandler[pathname] = handler
@@ -20,15 +27,21 @@ export class Router {
 
     const { handler, partialPathname } = this.routePartialMatch(pathname)
 
-    if (handler === null) {
-      return new Response('404 Not Found', { status: 404 })
+    const response =
+      handler === null
+        ? new Response('404 Not Found', { status: 404 })
+        : handler({
+            req,
+            server,
+            trailingPath: pathname.slice(partialPathname.length),
+          })
+
+    const origin = req.headers.get('Origin')
+    if (origin && this.config.corsOrigins.includes(origin)) {
+      response?.headers.set('Access-Control-Allow-Origin', origin)
     }
 
-    return handler({
-      req,
-      server,
-      trailingPath: pathname.slice(partialPathname.length),
-    })
+    return response
   }
 
   /** Searches for a partial routing match right-to-left from the pathname */
