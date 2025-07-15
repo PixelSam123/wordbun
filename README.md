@@ -1,6 +1,6 @@
 # wordbun
 
-![wordbun banner](<https://raw.githubusercontent.com/PixelSam123/wordbun/refs/heads/main/docs/wordbun.webpa>)
+![wordbun banner](<https://raw.githubusercontent.com/PixelSam123/wordbun/refs/heads/main/docs/wordbun.webp>)
 
 Fast & light implementation for wordgames, a word games server for WebSockets
 
