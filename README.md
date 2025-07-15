@@ -2,16 +2,9 @@
 
 Fast & light implementation for wordgames, a word games server for WebSockets
 
-## Highlights over the Java version
+## I just wanna play!
 
-- Abandoned random word API usage
-- Added room-listing endpoint
-- Added accidental disconnection handling (gives you time to reconnect)
-- Much more convenient format to start a game
-
-## APIs used
-
-No APIs used. Word banks come from text files.
+Head over to [pixelsam123.github.io/games/anagrams](https://pixelsam123.github.io/games/anagrams) to play right on the web client!
 
 ## List of games
 
@@ -32,7 +25,18 @@ Room ID can be any string.
 - [PixelSam123/wordgames-client](https://github.com/PixelSam123/wordgames-client)
 - [PixelSam123/wordgames_dc](https://github.com/PixelSam123/wordgames_dc)
 - [PixelSam123/wordgamestui](https://github.com/PixelSam123/wordgamestui)
-- [pixelsam123.github.io/minigames](https://pixelsam123.github.io/minigames)
+- [pixelsam123.github.io/games/anagrams](https://pixelsam123.github.io/games/anagrams)
+
+## Highlights over the Java version
+
+- Abandoned random word API usage
+- Added room-listing endpoint
+- Added accidental disconnection handling (gives you time to reconnect)
+- Much more convenient format to start a game
+
+## APIs used
+
+No APIs used. Word banks come from text files.
 
 ## Spinning it up
 
