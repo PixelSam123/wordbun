@@ -1,5 +1,7 @@
 # wordbun
 
+![wordbun banner](<docs/wordbun.webp>)
+
 Fast & light implementation for wordgames, a word games server for WebSockets
 
 ## I just wanna play!
