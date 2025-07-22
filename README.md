@@ -17,11 +17,6 @@ Head over to [pixelsam123.github.io/games/anagrams](https://pixelsam123.github.i
 - Word length configuration
 - Timer configuration
 
-## How to play?
-
-Connect to `wss://your-server-address/ws/anagram/{room ID}` and type `/help`!
-Room ID can be any string.
-
 ## Frontends
 
 ### Active repositories
@@ -33,6 +28,11 @@ Room ID can be any string.
 
 - Flutter (cross-platform): [PixelSam123/wordgames_dc](https://github.com/PixelSam123/wordgames_dc)
 - Go TUI: [PixelSam123/wordgamestui](https://github.com/PixelSam123/wordgamestui)
+
+## How to play with your own WebSocket frontend?
+
+Connect to `wss://your-server-address/ws/anagram/{room ID}` and type `/help`!
+Room ID can be any string.
 
 ## Highlights over the Java version
 
