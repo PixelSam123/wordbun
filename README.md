@@ -24,10 +24,15 @@ Room ID can be any string.
 
 ## Frontends
 
-- Rust: [PixelSam123/wordgames-client](https://github.com/PixelSam123/wordgames-client)
-- Flutter: [PixelSam123/wordgames_dc](https://github.com/PixelSam123/wordgames_dc)
-- Go TUI: [PixelSam123/wordgamestui](https://github.com/PixelSam123/wordgamestui)
+### Active repositories
+
+- Rust (desktop): [PixelSam123/wordgames-client](https://github.com/PixelSam123/wordgames-client)
 - Web: [pixelsam123.github.io/games/anagrams](https://pixelsam123.github.io/games/anagrams)
+
+### Inactive repositories
+
+- Flutter (cross-platform): [PixelSam123/wordgames_dc](https://github.com/PixelSam123/wordgames_dc)
+- Go TUI: [PixelSam123/wordgamestui](https://github.com/PixelSam123/wordgamestui)
 
 ## Highlights over the Java version
 
