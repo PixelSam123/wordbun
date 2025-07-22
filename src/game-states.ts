@@ -1,5 +1,5 @@
-import { randoSequence } from '@nastyox/rando.js'
 import { finishedRoundInfo, ongoingRoundInfo } from './message-factories'
+import { shuffleString } from './utils'
 
 export type GameConfig = {
   dictionary: string
@@ -47,7 +47,7 @@ export class GameOngoingRound implements GameState {
 
     let wordToGuess = remainingWords[0]
     while (wordToGuess === remainingWords[0]) {
-      wordToGuess = randoSequence(remainingWords[0])
+      wordToGuess = shuffleString(remainingWords[0])
     }
     this.wordToGuess = wordToGuess
 
