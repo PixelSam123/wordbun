@@ -13,7 +13,11 @@ router.add('/anagram', () => {
         publicRoom({
           roomId,
           playerCount: room.playerCount,
-          currentDictionary: null,
+          currentDictionary:
+            room.gameState?.getUnderlyingConfig().dictionary ?? null,
+          currentGameRoundsLeft: room.gameState?.getRoundsLeft() ?? null,
+          currentGameRoundCount:
+            room.gameState?.getUnderlyingConfig().roundCount ?? null,
         }),
       ),
   )

@@ -9,13 +9,16 @@ export type GameConfig = {
   wordLength: number
 }
 
-type PermanentGameConfig = {
-  secondsPerRound: number
-  secondsPerRoundEnd: number
-}
-
 export interface GameState {
   getRoundInfo(): string
+  getRoundsLeft(): number
+  getUnderlyingConfig(): GameConfig
+  /**
+   * Handles an incoming chat message for the current game state.
+   *
+   * @returns {string | null} Return null to fall back to the room's message handler,
+   * or a string to override it with a custom response.
+   */
   handleMessage(
     message: string,
     username: string,
@@ -31,7 +34,7 @@ export class GameOngoingRound implements GameState {
 
   constructor(
     private readonly remainingWords: string[],
-    private readonly permanentConfig: PermanentGameConfig,
+    private readonly config: GameConfig,
     private readonly onPlayerReceivePoints: (
       username: string,
       points: number,
@@ -43,7 +46,7 @@ export class GameOngoingRound implements GameState {
   ) {
     this.endTimeout = setTimeout(() => {
       this.endState()
-    }, permanentConfig.secondsPerRound * 1_000)
+    }, config.secondsPerRound * 1_000)
 
     let wordToGuess = remainingWords[0]
     while (wordToGuess === remainingWords[0]) {
@@ -53,7 +56,7 @@ export class GameOngoingRound implements GameState {
 
     const roundFinishTime = new Date()
     roundFinishTime.setSeconds(
-      roundFinishTime.getSeconds() + permanentConfig.secondsPerRound,
+      roundFinishTime.getSeconds() + config.secondsPerRound,
     )
     this.roundFinishTime = roundFinishTime.toISOString()
   }
@@ -63,6 +66,14 @@ export class GameOngoingRound implements GameState {
       wordToGuess: this.wordToGuess,
       roundFinishTime: this.roundFinishTime,
     })
+  }
+
+  getRoundsLeft(): number {
+    return this.remainingWords.length - 1
+  }
+
+  getUnderlyingConfig(): GameConfig {
+    return this.config
   }
 
   handleMessage(
@@ -98,11 +109,11 @@ export class GameOngoingRound implements GameState {
     this.onStateEnd(
       new GameFinishedRound(
         this.remainingWords,
-        this.permanentConfig,
+        this.config,
         this.onPlayerReceivePoints,
         this.onStateEnd,
       ),
-      `${this.remainingWords.length - 1} round(s) left.`,
+      `${this.getRoundsLeft()} round(s) left.`,
     )
   }
 }
@@ -113,7 +124,7 @@ export class GameFinishedRound implements GameState {
 
   constructor(
     private readonly remainingWords: string[],
-    private readonly permanentConfig: PermanentGameConfig,
+    private readonly config: GameConfig,
     private readonly onPlayerReceivePoints: (
       username: string,
       points: number,
@@ -125,11 +136,11 @@ export class GameFinishedRound implements GameState {
   ) {
     this.endTimeout = setTimeout(() => {
       this.endState()
-    }, permanentConfig.secondsPerRoundEnd * 1_000)
+    }, config.secondsPerRoundEnd * 1_000)
 
     const toNextRoundTime = new Date()
     toNextRoundTime.setSeconds(
-      toNextRoundTime.getSeconds() + permanentConfig.secondsPerRoundEnd,
+      toNextRoundTime.getSeconds() + config.secondsPerRoundEnd,
     )
     this.toNextRoundTime = toNextRoundTime.toISOString()
   }
@@ -139,6 +150,14 @@ export class GameFinishedRound implements GameState {
       wordAnswer: this.remainingWords[0],
       toNextRoundTime: this.toNextRoundTime,
     })
+  }
+
+  getRoundsLeft(): number {
+    return this.remainingWords.length - 1
+  }
+
+  getUnderlyingConfig(): GameConfig {
+    return this.config
   }
 
   handleMessage(message: string): string | null {
@@ -154,7 +173,7 @@ export class GameFinishedRound implements GameState {
       this.onStateEnd(
         new GameOngoingRound(
           this.remainingWords.slice(1),
-          this.permanentConfig,
+          this.config,
           this.onPlayerReceivePoints,
           this.onStateEnd,
         ),
